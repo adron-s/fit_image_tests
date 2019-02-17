@@ -220,7 +220,28 @@ void fdt_print_all(void *data){
 		}
 	}
 }
+
+void cpu_speed_test(void){
+	unsigned int a=55, b = 1, f;
+	//for(f = 0; f < 0x2FFFFFFF; f++){
+	for(f = 0; f < 35782656; f++){
+		if(f & 0x3){
+			a += b;
+			b = a;
+		}
+		/*if(f & 0x4){
+			a -= c;
+			c = a;
+		}*/
+		if((f & 0xFFFFF) == 0x20000)
+			printf("%u\n", f);
+	}
+	printf("%u\n", a);
+}
+
 unsigned char data[10 * 1024 * 1024];
+unsigned char rrrr[20 * 1024 * 1024];
+unsigned int lzma_gogogo(void *_kernel_la, void *_lzma_data, u32 _lzma_datasize);
 int main(void){
 	unsigned char *p = data;
 	int res;
@@ -237,13 +258,18 @@ int main(void){
 	}while(rest > 0);
 	close(fd);
 	printf("%zd bytes readed\n", sizeof(data) - rest);
-
+{
+	//unsigned char kaka[] = { 0x5D, 0x00, 0x00, 0x80, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x34, 0x19, 0x49, 0xEE, 0x8E, 0x68, 0x21, 0xFF, 0xFF, 0xFF, 0xB9, 0xE0, 0x00, 0x00};
+	//lzma_gogogo(rrrr, kaka, sizeof(kaka));
+}
+	cpu_speed_test();
+#if 0
 	res = fdt_check_header(data, sizeof(data) - rest);
 	if(res){
 		printf("fdt header contains errors. check res = %d\n", res);
 		return res;
 	}
-	//fdt_print_all(data); /* dump all items */
+	fdt_print_all(data); /* dump all items */
 
 	printf("FIT description: %s\n", fdt_get_prop(data, "", "description", NULL));
 	printf("kernel description: %s\n", fdt_get_prop(data, "kernel@1", "description", NULL));
@@ -252,12 +278,23 @@ int main(void){
 	printf("Entry Point: 0x%x\n", ntohl(*(u32*)fdt_get_prop(data, "kernel@1", "entry", NULL)));
 	{
 		u32 data_size = 0;
-		fdt_get_prop(data, "kernel@1", "data", &data_size);
+		u32 dtb_size = 0;
+		char *kern_data;
+		char *dtb_data;
+		kern_data = fdt_get_prop(data, "kernel@1", "data", &data_size);
 		printf("Kernel data Size: %d Bytes\n", data_size);
 		printf("kernel description: %s\n", fdt_get_prop(data, "fdt@1", "description", NULL));
-		fdt_get_prop(data, "fdt@1", "data", &data_size);
+		dtb_data = fdt_get_prop(data, "fdt@1", "data", &dtb_size);
 		printf("Kernel data Size: %d Bytes\n", data_size);
+		printf("data = %p\nkern_data = %p\n", (void*)data, (void*)kern_data);
+		printf("Kernel data offset = 0x%lx\n", (void*)kern_data - (void*)data);
+		//data_size = lzma_gogogo(rrrr, kern_data, data_size);
+		//printf("uncomp data_size = %d\n", data_size);
+		/*fd = open("./dump.bin", O_WRONLY | O_CREAT);
+		//write(fd, rrrr, data_size);
+		write(fd, dtb_data, dtb_size);
+		close(fd); */
 	}
-
+#endif
 	return 0;
 }

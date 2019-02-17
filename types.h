@@ -11,6 +11,8 @@
 #ifndef __TYPES_MINI_H
 #define __TYPES_MINI_H
 
+#include <stdint.h>
+//typedef unsigned long int uint64_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 typedef unsigned int u32;

@@ -1,3 +1,6 @@
 .*
 !.gitignore
 test
+*.o
+*.bin
+*.su

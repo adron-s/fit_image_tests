@@ -54,7 +54,7 @@ int fdt_check_header(void *data, u32 data_size){
 	u32 off_dt_struct = ntohl(image->off_dt_struct);
 	u32 off_dt_strings = ntohl(image->off_dt_strings);
 	u32 fdt_last_comp_version = ntohl(image->last_comp_version);
-	if(fdt_magic != FDT_IH_MAGIC)
+	if(fdt_magic != FDT_MAGIC)
 		return -1;
 	if(data_size < totalsize)
 		return -2;

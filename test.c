@@ -28,13 +28,19 @@
 #define FDT_FIRST_SUPPORTED_VERSION	0x10
 #define FDT_LAST_SUPPORTED_VERSION	0x11
 
-int streq(char *s1, char *s2){
+int fdt_streq(char *s1, char *s2){
 	for(; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
 		if(*s1 != *s2)
 			return 0;
 	if(*s1 == '\0' && *s2 == '\0')
 		return 1;
 	return 0;
+}
+
+int fdt_strlen(char *s){
+	int len = 0;
+	for(; *s != '\0'; s++, len++);
+	return len;
 }
 
 /*
@@ -97,12 +103,12 @@ char *fdt_get_prop(void *data, char *node_name, char *prop_name, u32 *lenp_ret){
 			break; /* end of tags list is reached */
 		switch(tag){
 			case FDT_BEGIN_NODE: /* node tag. is the parent node for props and node tags. */
-				if(streq(node_name, p + offset))
+				if(fdt_streq(node_name, p + offset))
 					is_node_found = 1;
 				else
 					is_node_found = 0;
 				/* skip name var */
-				offset += strlen(p + offset) + 1;
+				offset += fdt_strlen(p + offset) + 1;
 				break;
 			case FDT_PROP: /* props of this node */
 				lenp = (void*)p + offset;
@@ -116,7 +122,7 @@ char *fdt_get_prop(void *data, char *node_name, char *prop_name, u32 *lenp_ret){
 					/* out of range protection */
 					if((void*)cur_prop_name >= t)
 						return NULL; /* nameoff is out of range ! */
-					if(streq(prop_name, cur_prop_name)){
+					if(fdt_streq(prop_name, cur_prop_name)){
 						if(lenp_ret)
 							*lenp_ret = ntohl(*lenp);
 						return fdt_prop->data;
